@@ -1,6 +1,7 @@
 import websockets
 from module.const.OperationType import OperationType
 from module.data.MessageWrapper import MessageWrapper
+from string import Template
 
 class NewCastleModule :
     def __init__(self) -> None:
@@ -20,12 +21,21 @@ class NewCastleModule :
         async with websockets.connect(self.wsUrl) as websocket:
             while True :
                 message = await websocket.recv()
-                print(f"Received: {message}")
-                self.onMessage(message)
+                print(f"Raw: {message}")
+                event = self.onMessage(message)
+                await self.onConnected(websocket) if (event.data == "0") else {}
     
-    def onMessage(self, message):
+    def onMessage(self, message) -> MessageWrapper:
         decodedMessage = self.decodePacket(message)
-        print(decodedMessage.data)
+        print(f"Type: {decodedMessage.type.name}")
+        print(f"Message: {decodedMessage.data}\n")
+        return decodedMessage
+    
+    async def onConnected(self, websocket: websockets.ClientConnection):
+        jsonStr = Template('42["subscribe/symbols",{"subscribeToPrices":true,"symbols":[${symbols}]}]')
+        event = jsonStr.substitute(symbols= ', '.join(f"\"{symbol}\"" for symbol in self.symbols))
+        print(event)
+        await websocket.send(event)
 
     def decodePacket(self, packet: str, type = "") -> MessageWrapper: 
         if packet == "": return ""
@@ -36,11 +46,12 @@ class NewCastleModule :
         operation = int(packet[0]) if packet[0].isnumeric() else ""
         return MessageWrapper(
             type= self.operations[operation],
-            data= packet[1]
+            data= packet[1:]
         ) if operation != "" or self.operations[operation] != None else MessageWrapper(
             type= OperationType.Error,
             data= "Error :("
         )
+        
 
     # def decodeBase64Packet(data):
         
