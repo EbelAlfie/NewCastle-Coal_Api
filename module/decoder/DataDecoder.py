@@ -13,7 +13,7 @@ class DataDecoder:
 
     def decode(self, data: str):
         reduced = self.decodeData(data)
-        print(f"{dumps(reduced)}")
+        print(f"\n{dumps(reduced)}\n")
     
     def decodeData(self, data: str) :
         values = data.split(Symbols.DELIMITER.value)

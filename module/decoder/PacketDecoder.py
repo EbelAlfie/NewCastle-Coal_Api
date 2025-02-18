@@ -59,7 +59,6 @@ class PacketDecoder:
         AttributeWrapper(name="previousPrice", type="double"),
         AttributeWrapper(name="previousPricePreview", type="double"),
         AttributeWrapper(name="previousPreviousPrice", type="double"),
-
         AttributeWrapper(name="previousSettlementPrice", type="double"),
         AttributeWrapper(name="previousOpenPrice", type="double"),
         AttributeWrapper(name="previousHighPrice", type="double"),

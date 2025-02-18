@@ -26,14 +26,16 @@ class NewCastleModule :
     
     async def onWSMessage(self, message):
         decodedMessage: MessageModel = self.decodeMessage(message)
-        # print(f"Type: {decodedMessage.type.name}")
-        # print(f"Message: {decodedMessage.data}\n")
-
+        
         match decodedMessage.type:
             case OperationType.Open:
                 return 
             case OperationType.Message:
                 await self.onMessage(decodedMessage)
+                return 
+            case OperationType.Pong:
+                return 
+            case OperationType.Ping:
                 return 
             case _:
                return 
