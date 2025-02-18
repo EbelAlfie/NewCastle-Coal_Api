@@ -1,4 +1,4 @@
-from module.const.OperationType import OperationType
+from const.OperationType import OperationType
 
 class MessageWrapper:
     type: OperationType

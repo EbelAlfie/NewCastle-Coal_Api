@@ -1,4 +1,4 @@
-class Decoder:
+class PacketModel:
     type: int
     attachments: int
     nsp: str
