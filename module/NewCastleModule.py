@@ -1,7 +1,10 @@
 import websockets
 from module.const.OperationType import OperationType
+from module.const.PacketType import PacketType
 from module.data.MessageWrapper import MessageWrapper
 from string import Template
+from module.decoder.PacketDecoder import PacketDecoder
+from module.decoder.Decoder import Decoder
 
 class NewCastleModule :
     def __init__(self) -> None:
@@ -22,22 +25,32 @@ class NewCastleModule :
             while True :
                 message = await websocket.recv()
                 print(f"Raw: {message}")
-                event = self.onMessage(message)
-                await self.onConnected(websocket) if (event.data == "0") else {}
+
+                packet = await self.onMessage(message, websocket)                
+                        
     
-    def onMessage(self, message) -> MessageWrapper:
-        decodedMessage = self.decodePacket(message)
+    async def onMessage(self, message, websocket: websockets.ClientConnection) -> MessageWrapper:
+        decodedMessage = self.decodeMessage(message)
         print(f"Type: {decodedMessage.type.name}")
         print(f"Message: {decodedMessage.data}\n")
+
+        match decodedMessage.type:
+            case OperationType.Open:
+                return decodedMessage
+            case OperationType.Message:
+                PacketDecoder().addDecoder(decodedMessage.data)
+                await self.onConnected(websocket) if (decodedMessage.data == "0") else {}
+                return decodedMessage
+            case _:
+               return decodedMessage
         return decodedMessage
     
     async def onConnected(self, websocket: websockets.ClientConnection):
         jsonStr = Template('42["subscribe/symbols",{"subscribeToPrices":true,"symbols":[${symbols}]}]')
         event = jsonStr.substitute(symbols= ', '.join(f"\"{symbol}\"" for symbol in self.symbols))
-        print(event)
         await websocket.send(event)
 
-    def decodePacket(self, packet: str, type = "") -> MessageWrapper: 
+    def decodeMessage(self, packet: str, type = "") -> MessageWrapper: 
         if packet == "": return ""
 
         if packet[0] == "b" :
