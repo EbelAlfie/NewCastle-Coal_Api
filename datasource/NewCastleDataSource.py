@@ -1,8 +1,5 @@
 import websockets
-from const.OperationType import OperationType
-from module.data.MessageWrapper import MessageWrapper
 from string import Template
-from module.decoder.PacketDecoder import PacketDecoder
 
 class NewCastleDataSource :
     ws: websockets.ClientConnection

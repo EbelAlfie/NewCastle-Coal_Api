@@ -1,6 +1,6 @@
 from const.OperationType import OperationType
 
-class MessageWrapper:
+class MessageModel:
     type: OperationType
     data: str
 

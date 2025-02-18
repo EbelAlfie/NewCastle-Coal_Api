@@ -1,7 +1,7 @@
 from const.Symbols import Symbols
 from module.data.AttributeWrapper import AttributeWrapper
 from array import array
-from functools import reduce
+from json import dumps
 
 class DataDecoder:
     curSymbol: str 
@@ -13,7 +13,7 @@ class DataDecoder:
 
     def decode(self, data: str):
         reduced = self.decodeData(data)
-        print(f"reduced {reduced}")
+        print(f"{dumps(reduced)}")
     
     def decodeData(self, data: str) :
         values = data.split(Symbols.DELIMITER.value)
@@ -32,6 +32,5 @@ class DataDecoder:
 
                 jsonData[attribute.name] = self.curSymbol
         
-        print(jsonData)
         return jsonData
         

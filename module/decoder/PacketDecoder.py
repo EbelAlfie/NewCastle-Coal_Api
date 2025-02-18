@@ -80,9 +80,7 @@ class PacketDecoder:
 
     def addDecoder(self, data: str):
         decoded = self.decodePacket(data)
-        print(decoded.data)
         return decoded
-
 
     def decodePacket(self, data: str) -> PacketModel:
         r = 0

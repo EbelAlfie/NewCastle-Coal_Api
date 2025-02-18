@@ -1,9 +1,12 @@
 from const.OperationType import OperationType
-from module.data.MessageWrapper import MessageWrapper
+from module.data.MessageModel import MessageModel
 from module.data.PacketModel import PacketModel
 from module.decoder.PacketDecoder import PacketDecoder
 from datasource.NewCastleDataSource import NewCastleDataSource
 
+#Decode the message from websocket into [MessageModel]
+#Decode the message (If it is message) into [PacketModel]
+#Decode the [PacketModel] into dictionary
 class NewCastleModule :
     def __init__(self) -> None:
         self.symbols = ["LQH25"]
@@ -21,8 +24,8 @@ class NewCastleModule :
     async def openWebSocket(self):
         await self.dataSource.openWebSocket(self.onWSMessage)                              
     
-    async def onWSMessage(self, message) -> MessageWrapper:
-        decodedMessage: PacketModel = self.decodeMessage(message)
+    async def onWSMessage(self, message):
+        decodedMessage: MessageModel = self.decodeMessage(message)
         # print(f"Type: {decodedMessage.type.name}")
         # print(f"Message: {decodedMessage.data}\n")
 
@@ -35,24 +38,24 @@ class NewCastleModule :
             case _:
                return 
     
-    async def onMessage(self, message: PacketModel):
-        decodedPacket = PacketDecoder().addDecoder(message.data)
+    async def onMessage(self, message: MessageModel):
+        decodedPacket: PacketModel = PacketDecoder().addDecoder(message.data)
         await self.dataSource.sendRequest() if (message.data == "0") else {}
         if (decodedPacket.data == None): return 
         PacketDecoder().onDecoded(decodedPacket.data)
 
     
-    def decodeMessage(self, packet: str, type = "") -> MessageWrapper: 
+    def decodeMessage(self, packet: str, type = "") -> MessageModel: 
         if packet == "": return ""
 
         if packet[0] == "b" :
             return ""#self.decodeBase64Packet(packet[1:])
         
         operation = int(packet[0]) if packet[0].isnumeric() else ""
-        return MessageWrapper(
+        return MessageModel(
             type= self.operations[operation],
             data= packet[1:]
-        ) if operation != "" or self.operations[operation] != None else MessageWrapper(
+        ) if operation != "" or self.operations[operation] != None else MessageModel(
             type= OperationType.Error,
             data= "Error :("
         )
