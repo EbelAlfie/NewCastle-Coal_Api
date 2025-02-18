@@ -82,13 +82,12 @@ class PacketDecoder:
         
         return newDecoder
 
-    def onDecoded(self, data: list):
+    def onDecoded(self, data: list) -> dict[str, str]:
         match (data[0]):
             case WhatEverType.PS.value :
-                DataDecoder().decode(data[1])
-                return
+                return DataDecoder().decode(data[1])
             case WhatEverType.QS.value :
-                DataDecoder().decode(data[1])
+                # DataDecoder().decode(data[1])
                 return
             case WhatEverType.QD.value :
                 return

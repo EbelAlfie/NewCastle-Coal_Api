@@ -8,8 +8,6 @@ class DataDecoder:
     curSymbol: str 
     attributes: array
 
-    index: int
-
     def __init__(self):
         self.absent = Symbols.ABSENT.value
         self.attributes = [
@@ -26,24 +24,26 @@ class DataDecoder:
         ]
 
     def decode(self, data: str):
-        self.index = 0 #ngakalin
-        reduced = reduce(self.decodePS, data.split(Symbols.DELIMITER.value))
+        reduced = self.decodeData(data) #reduce(self.decodePS, data.split(Symbols.DELIMITER.value))
         print(f"reduced {reduced}")
     
-    def decodePS(self, initial, current):
-        symbol = current[0]
-        if (symbol != Symbols.ABSENT.value):
-            attribute = self.attributes[self.index] #, self.curSymbol
-            
-            if (symbol == Symbols.UNDEFINED.value):
-                self.curSymbol = None
-            elif (symbol == Symbols.NULL.value) :
-                self.curSymbol = None
-            else:
-                self.curSymbol = current[1:]
+    def decodeData(self, data: str) :
+        values = data.split(Symbols.DELIMITER.value)
+        jsonData = {}
+        for index, currentValue in enumerate(values):
+            symbol = currentValue[0] #Char at 0
+            if (symbol != Symbols.ABSENT.value):
+                attribute = self.attributes[index] #, self.curSymbol
+                
+                if (symbol == Symbols.UNDEFINED.value):
+                    self.curSymbol = None
+                elif (symbol == Symbols.NULL.value) :
+                    self.curSymbol = None
+                else:
+                    self.curSymbol = currentValue[1:]
 
-            initial[attribute.name] = self.curSymbol
-
-        self.index += 1
-
-        return initial
+                jsonData[attribute.name] = self.curSymbol
+        
+        print(jsonData)
+        return jsonData
+        
