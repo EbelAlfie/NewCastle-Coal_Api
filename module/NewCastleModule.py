@@ -34,8 +34,10 @@ class NewCastleModule :
                 await self.onMessage(decodedMessage)
                 return 
             case OperationType.Pong:
+                await self.dataSource.sendPing()
                 return 
             case OperationType.Ping:
+                await self.dataSource.sendPing()
                 return 
             case _:
                return 

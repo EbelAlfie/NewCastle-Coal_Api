@@ -22,6 +22,8 @@ class NewCastleDataSource :
         jsonStr = Template('42["subscribe/symbols",{"subscribeToPrices":true,"symbols":[${symbols}]}]')
         event = jsonStr.substitute(symbols= ', '.join(f"\"{symbol}\"" for symbol in self.symbols))
         await self.ws.send(event)
-                
+
+    async def sendPing(self):
+        await self.ws.send("2")            
 
     
